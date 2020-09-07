@@ -9,13 +9,15 @@ const client = new discord.Client();
 client.login(process.env.discord);
 client.on("message", function (msg) {
     if (msg.author.bot) return;
-    if (!msg.content.startsWith(cmdPrefix)) return;
     const channelId = msg.channel.id;
 
     if (!(channelId in sessions)) {
         sessions[channelId] = new tokeSession(msg.channel.id);
         createChannelData(msg);
     }
+    sessions[channelId].checkForBannedPhrase(msg);
+
+    if (!msg.content.startsWith(cmdPrefix)) return;
 
     sessions[channelId].checkForCmd(msg);
 });
@@ -69,21 +71,101 @@ function tokeSession(channelId) {
         "dougdimmadab": toke
     };
 
+    const bannedPhrases = [
+        "lsd",
+        "cocaine",
+        "mdma",
+        "ecstasy",
+        "codeine",
+        "percocet",
+        "vicodin",
+        "xanax",
+        "heroin",
+        "dxm",
+        "dmt",
+        "pcp"
+    ];
+
     var sessionReplies1 = [
-        "Toke it up!", "Blaze it!", "Hits from the bong!", "Pass the joint!", "Tokers unite!",
-        "That's the good stuff!", "Dabs for everybody!", "Blunts, and bongs, and dabs, Oh my!",
-        "Get cyber stoned and download some happiness!", "It smells like a Cypress Hill concert in here!",
+        "Toke it up!",
+        "Blaze it!",
+        "Hits from the bong!",
+        "Pass the joint!",
+        "Tokers unite!",
+        "That's the good stuff!",
+        "Dabs for everybody!",
+        "Blunts, and bongs, and dabs, Oh my!",
+        "Get cyber stoned and download some happiness!",
+        "It smells like a Cypress Hill concert in here!",
         "Man that was a good session."];
 
     var sessionReplies2 = [
-        "Getting stoned with", "Toking it up with", "Smoking with", "Stoned with the homies", "That was a nice session with",
-        "Blazing with", "Burning one with"
+        "Getting stoned with",
+        "Toking it up with",
+        "Smoking with",
+        "Stoned with the homies",
+        "That was a nice session with",
+        "Blazing with",
+        "Burning one with"
     ];
 
     // Initialize the channel data
     async function init() {
         await loadChannelTimes();
         initialized = true;
+    }
+
+    this.checkForBannedPhrase = function (msg) {
+        if (new RegExp("\\b" + bannedPhrases.join("|") + "\\b").test(msg.content)) {
+            applyWarning(msg);
+        }
+    }
+
+    function applyWarning(msg) {
+        var warningNumber = 0;
+
+        if (!msg.member.roles.cache.some(r => r.name === "Warned 1")) {
+            var warned1 = msg.guild.roles.cache.find(r => r.name === "Warned 1");
+            msg.member.roles.add(warned1);
+            warningNumber = 1;
+        } else if (!msg.member.roles.cache.some(r => r.name === "Warned 2")) {
+            var warned2 = msg.guild.roles.cache.find(r => r.name === "Warned 2");
+            msg.member.roles.add(warned2);
+            warningNumber = 2;
+        } else {
+            var warned3 = msg.guild.roles.cache.find(r => r.name === "Warned 3");
+            msg.member.roles.add(warned3);
+            warningNumber = 3;
+        }
+
+        logWarnedMessage(msg, warningNumber);
+
+        if (warningNumber < 3) {
+            msg.reply(`this is a cannabis only server. Please don't talk about other drugs. You have been warned ${warningNumber} times.`);
+        } else {
+            msg.reply(`this is a cannabis only server. Please don't talk about other drugs. FINAL WARNING!`);
+            const channel = client.channels.cache.find(channel => channel.name.toLowerCase() === "moderation");
+            channel.send(`${msg.author} has hit 3 warnings for talking about drugs.`);
+        }
+    }
+
+    function logWarnedMessage(msg, warningNumber) {
+        MongoClient.connect(mongoConnectionUrl, function (err, db) {
+            if (err) throw err;
+            var dbo = db.db("tokebot");
+
+            var values = {
+                user_id: msg.author.id,
+                warning_number: warningNumber,
+                message: msg.content,
+                time: new Date().toLocaleString()
+            };
+            dbo.collection("warned_messages").insertOne(values, function (err, res) {
+                if (err) throw err;
+                console.log(`Inserted warned_messages data.`);
+                db.close();
+            });
+        });
     }
 
     this.checkForCmd = async function (msg) {
