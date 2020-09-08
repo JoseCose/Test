@@ -5,9 +5,9 @@ var mongoConnectionUrl = process.env.mongo;
 const cmdPrefix = "!";
 var sessions = {};
 
-const client = new discord.Client();
-client.login(process.env.discord);
-client.on("message", function (msg) {
+const discordClient = new discord.Client();
+discordClient.login(process.env.discord);
+discordClient.on("message", function (msg) {
     if (msg.author.bot) return;
     const channelId = msg.channel.id;
 
@@ -56,6 +56,7 @@ function tokeSession(channelId) {
 
     const commands = {
         "toke ping": ping,
+        "toke records": postRecords,
         "toke reminder": setReminderInterval,
         "toke": toke,
         "bong": toke,
@@ -144,7 +145,7 @@ function tokeSession(channelId) {
             msg.reply(`this is a cannabis only server. Please don't talk about other drugs. You have been warned ${warningNumber} times.`);
         } else {
             msg.reply(`this is a cannabis only server. Please don't talk about other drugs. FINAL WARNING!`);
-            const channel = client.channels.cache.find(channel => channel.name.toLowerCase() === "moderation");
+            const channel = discordClient.channels.cache.find(channel => channel.name.toLowerCase() === "moderation");
             channel.send(`${msg.author} has hit 3 warnings for talking about drugs.`);
         }
     }
@@ -378,7 +379,7 @@ function tokeSession(channelId) {
             var values = {
                 channel_id: channelId, 
                 count: count,
-                particpants: participants,
+                participants: participants,
                 time: new Date().toLocaleString()
             };
             dbo.collection("pretoke_counts").insertOne(values, function (err, res) {
@@ -397,7 +398,7 @@ function tokeSession(channelId) {
             var values = {
                 channel_id: channelId,
                 count: count,
-                particpants: participants,
+                participants: participants,
                 time: new Date().toLocaleString()
             };
             dbo.collection("toke_counts").insertOne(values, function (err, res) {
@@ -406,6 +407,38 @@ function tokeSession(channelId) {
                 db.close();
             });
         });
+    }
+
+    async function postRecords(msg, command) {
+        const client = await MongoClient.connect(mongoConnectionUrl, { useNewUrlParser: true })
+            .catch(err => { console.log(err); });
+
+        if (!client) {
+            return;
+        }
+
+        try {
+            const db = client.db(`tokebot`);
+            var tokeDbo = db.collection('toke_counts');
+            var tokeKeys = { channel_id: channelId }
+            var tokeSort = { count: -1 }
+            var tokeRes = await tokeDbo.find(tokeKeys).sort(tokeSort).toArray();
+
+            var preTokeDbo = db.collection('pretoke_counts');
+            var preTokeKeys = { channel_id: channelId }
+            var preTokeSort = { count: -1 }
+            var preTokeRes = await preTokeDbo.find(preTokeKeys).sort(preTokeSort).toArray();
+
+            const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
+            channel.send(`There have been ${tokeRes.length} toke sessions. ${preTokeRes.length} had pre tokes. \n` +
+                `Largest toke session: ${tokeRes.length > 0 ? tokeRes[0].count : 0} tokers. \n` +
+                `Largest pre toke session: ${preTokeRes.length > 0 ? preTokeRes[0].count : 0} pre tokers.`);
+            
+        } catch (err) {
+            console.log(err);
+        } finally {
+            client.close();
+        }
     }
     
     return this;
