@@ -50,8 +50,8 @@ function tokeSession(channelId) {
     var sessionRunning = false;
     var sessionRunning = false;
     var participants = [];
-    var sessionInterval;
-    var reminderInterval;
+    var sessionInterval = 300000;
+    var reminderInterval = 120000;
     var initialized = false;
 
     const commands = {
