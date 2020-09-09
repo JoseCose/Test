@@ -469,7 +469,12 @@ function tokeSession(channelId, channelName) {
         if (channelName === "main-chat" || channelName === "general") {
             if (date.getUTCMinutes() === 20) {
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
-                channel.send(get420Reply());
+                var reply = get420Reply();
+
+                if (reply !== null) {
+                    channel.send(get420Reply());
+                }
+
                 // Call again in one hour.
                 clearInterval(four20Timer);
                 four20Timer = setInterval(check420, 3600000);
@@ -507,13 +512,13 @@ function tokeSession(channelId, channelName) {
                 reply = reply.concat("in Hawaii Time.");
                 break;
             default:
-                reply = reply.concat("somewhere in the world.");
+                // We don't need to reply because we don't follow other timezones.
+                reply = null;
                 break;
 
         }
 
         return reply;
-
     }
 
     return this;
