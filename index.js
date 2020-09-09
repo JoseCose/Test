@@ -1,4 +1,5 @@
 ﻿require('dotenv').config();
+var http = require('http');
 const discord = require("discord.js");
 var MongoClient = require('mongodb').MongoClient;
 var mongoConnectionUrl = process.env.mongo;
@@ -440,6 +441,25 @@ function tokeSession(channelId) {
             client.close();
         }
     }
-    
+
+    var four20Timer = setInterval(check420, 60000);
+
+    function check420() {
+
+        if (new Date().getMinutes() === 20) {
+            http.get('http://420checker.com/getcity.php', function (data) {
+
+                data.on("data", function (chunk) {
+                    var reply = chunk.slice(chunk.indexOf("It's"));
+                    const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
+                    channel.send(reply.toString());
+                });
+            });
+
+            // Call again in one hour.
+            clearInterval(four20Timer);
+            four20Timer = setInterval(check420, 3600000);
+        }
+    }
     return this;
 }
