@@ -51,6 +51,7 @@ function tokeSession(channelId) {
     var sessionRunning = false;
     var sessionRunning = false;
     var participants = [];
+    var spiritTokers = [];
     var sessionInterval = 300000;
     var reminderInterval = 120000;
     var initialized = false;
@@ -70,6 +71,7 @@ function tokeSession(channelId) {
         "vape": toke,
         "blaze": toke,
         "pre": addParticipant,
+        "spirit": addSpiritToker,
         "dougdimmadab": toke,
         "420": post420
     };
@@ -239,7 +241,8 @@ function tokeSession(channelId) {
         }, reminderInterval);
 
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` +
-            filteredParticipants : "") + `. Type !toke to join. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
+            filteredParticipants : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers + ` toking in spirit. ` : ``) +
+            `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
         addSessionReact(msg);
         console.log(`Starting session.`);
     }
@@ -293,9 +296,23 @@ function tokeSession(channelId) {
         }
     }
 
+    function addSpiritToker(msg) {
+        // They don't need to toke in spirit if they are already in the session.
+        if (!spiritTokers.includes(msg.author.toString()) && !participants.includes(msg.author.toString())) {
+            spiritTokers.push(msg.author.toString());
+        }
+
+        addSessionReact(msg);
+    }
+
     function addParticipant(msg) {
         if (!participants.includes(msg.author.toString())) {
             participants.push(msg.author.toString());
+        }
+
+        // If they are joining the session they don't need to be in spirit tokers anymore.
+        if (spiritTokers.includes(msg.author.toString())) {
+            spiritTokers.splice(msg.author.toString());
         }
 
         addSessionReact(msg);
@@ -306,9 +323,11 @@ function tokeSession(channelId) {
         clearTimeout(tokeTimer);
         console.log(`Session elapsed.`);
         msg.channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
-            ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants}.`);
+            ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants}.` +
+            (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers : ""));
         saveTokeCount(participants.length, participants.slice());
         participants = [];
+        spiritTokers = [];
         sessionRunning = false;
     }
 
