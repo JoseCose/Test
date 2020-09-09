@@ -480,7 +480,8 @@ function tokeSession(channelId) {
 
             data.on("data", function (chunk) {
                 reply = chunk.slice(chunk.indexOf("It's"));
-                const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
+                const channel = discordClient.channels.cache.find(channel => channel.name.toLowerCase() == "main-chat" || 
+                    channel.name.toLowerCase() == "general");
                 channel.send(reply.toString());
             });
         });
