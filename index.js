@@ -475,7 +475,7 @@ function tokeSession(channelId, channelName) {
     }
 
     function post420() {
-        if (channelName === "#main-chat" || chanellName === "#general") {
+        if (channelName === "main-chat" || chanellName === "general") {
             http.get('http://420checker.com/getcity.php', function (data) {
                 var reply = "";
 
