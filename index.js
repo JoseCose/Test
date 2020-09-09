@@ -475,13 +475,14 @@ function tokeSession(channelId, channelName) {
     }
 
     function post420() {
-        if (channelName === "main-chat" || chanellName === "general") {
+        console.log(channelName);
+        if (channelName === "main-chat" || channelName === "general") {
             http.get('http://420checker.com/getcity.php', function (data) {
                 var reply = "";
 
                 data.on("data", function (chunk) {
                     reply = chunk.slice(chunk.indexOf("It's"));
-                    const channel = discordClient.channels.cache.find(channel => channel = msg.channel.name);
+                    const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                     channel.send(reply.toString());
                 });
             });
