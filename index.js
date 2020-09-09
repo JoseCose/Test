@@ -475,16 +475,18 @@ function tokeSession(channelId) {
     }
 
     function post420() {
-        http.get('http://420checker.com/getcity.php', function (data) {
-            var reply = "";
+        if (discordClient.channels.cache.find(channel => channel.name.toLowerCase() == "main-chat" ||
+            channel.name.toLowerCase() == "general")) {
+            http.get('http://420checker.com/getcity.php', function (data) {
+                var reply = "";
 
-            data.on("data", function (chunk) {
-                reply = chunk.slice(chunk.indexOf("It's"));
-                const channel = discordClient.channels.cache.find(channel => channel.name.toLowerCase() == "main-chat" || 
-                    channel.name.toLowerCase() == "general");
-                channel.send(reply.toString());
+                data.on("data", function (chunk) {
+                    reply = chunk.slice(chunk.indexOf("It's"));
+                    const channel = discordClient.channels.cache.find(channel => channel = msg.channel.name);
+                    channel.send(reply.toString());
+                });
             });
-        });
+        }
     }
 
     return this;
