@@ -72,8 +72,7 @@ function tokeSession(channelId, channelName) {
         "blaze": toke,
         "pre": addParticipant,
         "spirit": addSpiritToker,
-        "dougdimmadab": toke,
-        "420": post420
+        "dougdimmadab": toke
     };
 
     const bannedPhrases = [
@@ -465,12 +464,15 @@ function tokeSession(channelId, channelName) {
     var four20Timer = setInterval(check420, 60000);
 
     function check420() {
+        var date = new Date();
+
         if (channelName === "main-chat" || channelName === "general") {
-            if (new Date().getMinutes() === 20) {
+            if (date.getUTCMinutes() === 20) {
+                const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+                channel.send(get420Reply());
                 // Call again in one hour.
                 clearInterval(four20Timer);
                 four20Timer = setInterval(check420, 3600000);
-                post420();
             }
         }
         else {
@@ -479,16 +481,39 @@ function tokeSession(channelId, channelName) {
         }
     }
 
-    function post420() {
-        http.get('http://420checker.com/getcity.php', function (data) {
-            var reply = "";
+    function get420Reply() {
+        var reply = "It's currently 4:20 ";
+        var date = new Date();
 
-            data.on("data", function (chunk) {
-                reply = chunk.slice(chunk.indexOf("It's"));
-                const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
-                channel.send(reply.toString());
-            });
-        });
+        switch (date.getUTCHours()) {
+            case 8:
+            case 20:
+                reply = reply.concat("in Eatern Time.");
+                break;
+            case 9:
+            case 21:
+                reply = reply.concat("in Central Time.");
+                break;
+            case 10:
+            case 22:
+                reply = reply.concat("in Mountain Time.");
+                break;
+            case 11:
+            case 23:
+                reply =reply.concat("in Pacific Time.");
+                break;
+            case 13:
+            case 1:
+                reply = reply.concat("in Hawaii Time.");
+                break;
+            default:
+                reply = reply.concat("somewhere in the world.");
+                break;
+
+        }
+
+        return reply;
+
     }
 
     return this;
