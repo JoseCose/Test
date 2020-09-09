@@ -465,28 +465,30 @@ function tokeSession(channelId, channelName) {
     var four20Timer = setInterval(check420, 60000);
 
     function check420() {
-
-        if (new Date().getMinutes() === 20) {
-            // Call again in one hour.
+        if (channelName === "main-chat" || channelName === "general") {
+            if (new Date().getMinutes() === 20) {
+                // Call again in one hour.
+                clearInterval(four20Timer);
+                four20Timer = setInterval(check420, 3600000);
+                post420();
+            }
+        }
+        else {
+            // We don't need to check again because we're not in a main channel.
             clearInterval(four20Timer);
-            four20Timer = setInterval(check420, 3600000);
-            post420();
         }
     }
 
     function post420() {
-        console.log(channelName);
-        if (channelName === "main-chat" || channelName === "general") {
-            http.get('http://420checker.com/getcity.php', function (data) {
-                var reply = "";
+        http.get('http://420checker.com/getcity.php', function (data) {
+            var reply = "";
 
-                data.on("data", function (chunk) {
-                    reply = chunk.slice(chunk.indexOf("It's"));
-                    const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
-                    channel.send(reply.toString());
-                });
+            data.on("data", function (chunk) {
+                reply = chunk.slice(chunk.indexOf("It's"));
+                const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+                channel.send(reply.toString());
             });
-        }
+        });
     }
 
     return this;
