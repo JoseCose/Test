@@ -13,7 +13,7 @@ discordClient.on("message", function (msg) {
     const channelId = msg.channel.id;
 
     if (!(channelId in sessions)) {
-        sessions[channelId] = new tokeSession(msg.channel.id);
+        sessions[channelId] = new tokeSession(msg.channel.id, msg.channel.name.toLowerCase());
         createChannelData(msg);
     }
     sessions[channelId].checkForBannedPhrase(msg);
@@ -45,7 +45,7 @@ function createChannelData(msg) {
     });
 }
 
-function tokeSession(channelId) {
+function tokeSession(channelId, channelName) {
     var tokeTimer;
     var reminderTimer;
     var sessionRunning = false;
@@ -475,8 +475,7 @@ function tokeSession(channelId) {
     }
 
     function post420() {
-        if (discordClient.channels.cache.find(channel => channel.name.toLowerCase() == "main-chat" ||
-            channel.name.toLowerCase() == "general")) {
+        if (channelName === "#main-chat" || chanellName === "#general") {
             http.get('http://420checker.com/getcity.php', function (data) {
                 var reply = "";
 
