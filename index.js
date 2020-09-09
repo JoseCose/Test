@@ -70,7 +70,8 @@ function tokeSession(channelId) {
         "vape": toke,
         "blaze": toke,
         "pre": addParticipant,
-        "dougdimmadab": toke
+        "dougdimmadab": toke,
+        "420": post420
     };
 
     const bannedPhrases = [
@@ -447,19 +448,24 @@ function tokeSession(channelId) {
     function check420() {
 
         if (new Date().getMinutes() === 20) {
-            http.get('http://420checker.com/getcity.php', function (data) {
-
-                data.on("data", function (chunk) {
-                    var reply = chunk.slice(chunk.indexOf("It's"));
-                    const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
-                    channel.send(reply.toString());
-                });
-            });
-
             // Call again in one hour.
             clearInterval(four20Timer);
             four20Timer = setInterval(check420, 3600000);
+            post420();
         }
     }
+
+    function post420() {
+        http.get('http://420checker.com/getcity.php', function (data) {
+            var reply = "";
+
+            data.on("data", function (chunk) {
+                reply = chunk.slice(chunk.indexOf("It's"));
+                const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
+                channel.send(reply.toString());
+            });
+        });
+    }
+
     return this;
 }
