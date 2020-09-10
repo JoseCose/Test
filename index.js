@@ -247,6 +247,12 @@ function tokeSession(channelId, channelName) {
     }
 
     function setTokeInterval(msg, minutes) {
+        if (minutes < 1) {
+            minutes = 1;
+        } else if (minutes > 60) {
+            minutes = 60;
+        }
+
         sessionInterval = minutes * 60000;
         saveChannelTimes();
         console.log(`Toke interval set to ${minutes} (${sessionInterval}ms).`);
@@ -275,7 +281,14 @@ function tokeSession(channelId, channelName) {
 
     function setReminderInterval(msg, command) {
         const args = msg.content.slice(command.length).trim().split(' ');
-        const minutes = parseInt(args[0]);
+        var minutes = parseInt(args[0]);
+
+        if (minutes < 1) {
+            minutes = 1;
+        } else if (minutes > 60) {
+            minutes = 60;
+        }
+
 
         if (!isNaN(minutes)) {
             reminderInterval = minutes * 60000;
