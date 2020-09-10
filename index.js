@@ -250,6 +250,7 @@ function tokeSession(channelId, channelName) {
 
         if (!isNaN(minutes)) {
             var intMinutes = parseInt(minutes);
+            console.log(intMinutes);
 
             if (intMinutes < 1) {
                 intMinutes = 1;
