@@ -240,7 +240,7 @@ function tokeSession(channelId, channelName) {
         }, reminderInterval);
 
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` +
-            filteredParticipants : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers + ` toking in spirit. ` : ``) +
+            filteredParticipants.join(", ") : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers.join(", ") + ` toking in spirit. ` : ``) +
             `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
         addSessionReact(msg);
         console.log(`Starting session.`);
@@ -338,8 +338,8 @@ function tokeSession(channelId, channelName) {
         clearTimeout(tokeTimer);
         console.log(`Session elapsed.`);
         msg.channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
-            ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants}.` +
-            (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers : ""));
+            ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants.join(", ")}.` +
+            (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers.join(", ") : ""));
         saveTokeCount(participants.length, participants.slice());
         participants = [];
         spiritTokers = [];
@@ -350,7 +350,7 @@ function tokeSession(channelId, channelName) {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
             msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.` +
-                ` Current tokers: ${participants}.`, { "allowedMentions": { "users": [] } });
+                ` Current tokers: ${participants.join(", ")}.`, { "allowedMentions": { "users": [] } });
         }
     }
 
