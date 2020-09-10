@@ -241,7 +241,7 @@ function tokeSession(channelId, channelName) {
 
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` +
             filteredParticipants : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers + ` toking in spirit. ` : ``) +
-            `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
+            `Type !toke to join. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`, { "allowedMentions": { "users": filteredParticipants } });
         addSessionReact(msg);
         console.log(`Starting session.`);
     }
@@ -333,7 +333,8 @@ function tokeSession(channelId, channelName) {
     function reminderTimerElapsed(msg) {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
-            msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
+            msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.` +
+                ` Current tokers: ${participants}.`, { "allowedMentions": { "users": [] } });
         }
     }
 
