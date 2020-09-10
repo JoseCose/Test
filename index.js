@@ -354,10 +354,7 @@ function tokeSession(channelId, channelName) {
     function reminderTimerElapsed(msg) {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
-            msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.` +
-                (participants.length > 0 ? ` Current tokers: ` + participants.join(", ") + `.` : ``) +
-                (spiritTokers.length > 0 ? ` Toking in spirit: ` + spiritTokers.join(", ") + `.` : ``),
-                { "allowedMentions": { "users": [] } });
+            msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
         }
     }
 
