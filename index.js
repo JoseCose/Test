@@ -493,7 +493,7 @@ function tokeSession(channelId, channelName) {
         switch (date.getUTCHours()) {
             case 8:
             case 20:
-                reply = reply.concat("in Eatern Time.");
+                reply = reply.concat("in Eastern Time.");
                 break;
             case 9:
             case 21:
