@@ -247,18 +247,21 @@ function tokeSession(channelId, channelName) {
     }
 
     function setTokeInterval(msg, minutes) {
-        if (minutes < 1) {
-            minutes = 1;
-        } else if (minutes > 60) {
-            minutes = 60;
-        }
-
-        sessionInterval = minutes * 60000;
-        saveChannelTimes();
-        console.log(`Toke interval set to ${minutes} (${sessionInterval}ms).`);
-        msg.channel.send(`Updated the session time to ${minutes} minutes.`);
 
         if (!isNaN(minutes)) {
+            var intMinutes = parseInt(minutes);
+
+            if (intMinutes < 1) {
+                intMinutes = 1;
+            } else if (intMinutes > 60) {
+                intMinutes = 60;
+            }
+
+            sessionInterval = intMinutes * 60000;
+            saveChannelTimes();
+            console.log(`Toke interval set to ${intMinutes} (${sessionInterval}ms).`);
+            msg.channel.send(`Updated the session time to ${minutes} minutes.`);
+
             if (sessionRunning) {
                 clearTimeout(tokeTimer);
                 tokeTimer = setTimeout(function () {
