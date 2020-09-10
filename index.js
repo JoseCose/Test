@@ -250,7 +250,6 @@ function tokeSession(channelId, channelName) {
 
         if (!isNaN(minutes)) {
             var intMinutes = parseInt(minutes);
-            console.log(intMinutes);
 
             if (intMinutes < 1) {
                 intMinutes = 1;
@@ -261,7 +260,7 @@ function tokeSession(channelId, channelName) {
             sessionInterval = intMinutes * 60000;
             saveChannelTimes();
             console.log(`Toke interval set to ${intMinutes} (${sessionInterval}ms).`);
-            msg.channel.send(`Updated the session time to ${minutes} minutes.`);
+            msg.channel.send(`Updated the session time to ${intMinutes} minutes.`);
 
             if (sessionRunning) {
                 clearTimeout(tokeTimer);
