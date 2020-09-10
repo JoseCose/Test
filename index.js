@@ -239,9 +239,8 @@ function tokeSession(channelId, channelName) {
             reminderTimerElapsed(msg);
         }, reminderInterval);
 
-        msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` +
-            filteredParticipants.join(", ") : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers.join(", ") + ` toking in spirit. ` : ``) +
-            `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
+        msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` + filteredParticipants.join(", ") : "") +
+            `. Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
         addSessionReact(msg);
         console.log(`Starting session.`);
     }
@@ -312,13 +311,18 @@ function tokeSession(channelId, channelName) {
     }
 
     function addSpiritToker(msg) {
-        // They don't need to toke in spirit if they are already in the session.
-        if (!spiritTokers.includes(msg.author.toString()) && !participants.includes(msg.author.toString())) {
-            spiritTokers.push(msg.author.toString());
-            console.log("%%%%%%%%%%%%");
-        }
+        if (sessionRunning) {
+            if (!spiritTokers.includes(msg.author.toString())) {
+                spiritTokers.push(msg.author.toString());
+            }
 
-        addSessionReact(msg);
+            // If they are joining the spirit session they don't need to be in participants anymore.
+            if (participants.includes(msg.author.toString())) {
+                participants.splice(msg.author.toString());
+            }
+
+            addSessionReact(msg);
+        }
     }
 
     function addParticipant(msg) {
@@ -340,7 +344,7 @@ function tokeSession(channelId, channelName) {
         console.log(`Session elapsed.`);
         msg.channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
             ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants.join(", ")}.` +
-            (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers.join(", ") : "") + `.`);
+            (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers.join(", ") + '.' : ""));
         saveTokeCount(participants.length, participants.slice());
         participants = [];
         spiritTokers = [];
@@ -351,7 +355,9 @@ function tokeSession(channelId, channelName) {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
             msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.` +
-                ` Current tokers: ${participants.join(", ")}. ` + (spiritTokers.length > 0 ? `Toking in spirit: ` + spiritTokers.join(", ") : ``), { "allowedMentions": { "users": [] } });
+                (participants.length > 0 ? ` Current tokers: ` + participants.join(", ") + `.` : ``) +
+                (spiritTokers.length > 0 ? ` Toking in spirit: ` + spiritTokers.join(", ") + `.` : ``),
+                { "allowedMentions": { "users": [] } });
         }
     }
 
