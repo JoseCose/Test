@@ -241,7 +241,7 @@ function tokeSession(channelId, channelName) {
 
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` +
             filteredParticipants : "") + `. ` + (spiritTokers.length > 0 ? spiritTokers + ` toking in spirit. ` : ``) +
-            `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`, { "allowedMentions": { "users": [participants] } });
+            `Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`, { "allowedMentions": { "users": [] } });
         addSessionReact(msg);
         console.log(`Starting session.`);
     }
