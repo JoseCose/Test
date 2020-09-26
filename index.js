@@ -232,11 +232,11 @@ function tokeSession(channelId, channelName) {
         timeStarted = Date.now();
 
         tokeTimer = setTimeout(function () {
-            tokeTimerElapsed(msg);
+            tokeTimerElapsed();
         }, sessionInterval);
 
         reminderTimer = setInterval(function () {
-            reminderTimerElapsed(msg);
+            reminderTimerElapsed();
         }, reminderInterval);
 
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` + filteredParticipants.join(", ") : "") +
@@ -264,7 +264,7 @@ function tokeSession(channelId, channelName) {
             if (sessionRunning) {
                 clearTimeout(tokeTimer);
                 tokeTimer = setTimeout(function () {
-                    tokeTimerElapsed(msg);
+                    tokeTimerElapsed();
                 }, sessionInterval);
                 timeStarted = Date.now();
                 console.log(`Restarted timer.`);
@@ -272,7 +272,7 @@ function tokeSession(channelId, channelName) {
                 // Restart the reminder timer to keep it even with the session timer. 
                 clearInterval(reminderTimer);
                 reminderTimer = setInterval(function () {
-                    reminderTimerElapsed(msg);
+                    reminderTimerElapsed();
                 }, reminderInterval);
                 console.log(`Restarted reminder timer.`);
             }
@@ -301,7 +301,7 @@ function tokeSession(channelId, channelName) {
 
             if (sessionRunning) {
                 reminderTimer = setInterval(function () {
-                    reminderTimerElapsed(msg);
+                    reminderTimerElapsed();
                 }, reminderInterval);
                 console.log(`Restarted reminder timer.`);
             }
@@ -338,11 +338,12 @@ function tokeSession(channelId, channelName) {
         addSessionReact(msg);
     }
 
-    function tokeTimerElapsed(msg) {
+    function tokeTimerElapsed() {
         clearInterval(reminderTimer);
         clearTimeout(tokeTimer);
         console.log(`Session elapsed.`);
-        msg.channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
+        const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+        channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
             ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants.join(", ")}.` +
             (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers.join(", ") + '.' : ""));
         saveTokeCount(participants.length, participants.slice());
@@ -351,10 +352,11 @@ function tokeSession(channelId, channelName) {
         sessionRunning = false;
     }
 
-    function reminderTimerElapsed(msg) {
+    function reminderTimerElapsed() {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
-            msg.channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
+            const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+            channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
         }
     }
 
@@ -488,12 +490,18 @@ function tokeSession(channelId, channelName) {
         var date = new Date();
 
         if (channelName === "main-chat" || channelName === "general") {
-            if (date.getUTCMinutes() === 20) {
+            if (date.getUTCMinutes() === 27) {
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                 var reply = get420Reply();
 
                 if (reply !== null) {
-                    channel.send(get420Reply());
+
+                    if (participants.length > 0 && !sessionRunning) {
+                        start420Session();
+                        reply = reply.concat(` Starting a sesion with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
+                    }
+
+                    channel.send(reply);
                 }
 
                 // Call again in one hour.
@@ -540,6 +548,21 @@ function tokeSession(channelId, channelName) {
         }
 
         return reply;
+    }
+
+    function start420Session() {
+        sessionRunning = true;
+        timeStarted = Date.now();
+
+        tokeTimer = setTimeout(function () {
+            tokeTimerElapsed();
+        }, sessionInterval);
+
+        reminderTimer = setInterval(function () {
+            reminderTimerElapsed();
+        }, reminderInterval);
+
+        console.log(`Starting 420 session.`);
     }
 
     return this;
