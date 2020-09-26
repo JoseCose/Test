@@ -490,7 +490,7 @@ function tokeSession(channelId, channelName) {
         var date = new Date();
 
         if (channelName === "main-chat" || channelName === "general") {
-            if (date.getUTCMinutes() === 27) {
+            if (date.getUTCMinutes() === 20) {
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                 var reply = get420Reply();
 
