@@ -520,6 +520,14 @@ function tokeSession(channelId, channelName) {
         var date = new Date();
 
         switch (date.getUTCHours()) {
+            case 3:
+            case 15:
+                reply = reply.concat("in British Summer Time.");
+                break;
+            case 2:
+            case 14:
+                reply = reply.concat("in South Africa Standard Time.");
+                break;
             case 8:
             case 20:
                 reply = reply.concat("in Eastern Time.");
