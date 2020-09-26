@@ -536,6 +536,10 @@ function tokeSession(channelId, channelName) {
             case 23:
                 reply =reply.concat("in Pacific Time.");
                 break;
+            case 12:
+            case 0:
+                reply = reply.concat("in Pacific Time.");
+                break;
             case 14:
             case 2:
                 reply = reply.concat("in Hawaii Time.");
