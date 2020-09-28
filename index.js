@@ -1,28 +1,43 @@
-﻿require('dotenv').config();
+﻿// DotEnv (environment variables).
+require('dotenv').config();
+
+// Node.js
 var http = require('http');
-const discord = require("discord.js");
+
+// MongoDB config
 var MongoClient = require('mongodb').MongoClient;
 var mongoConnectionUrl = process.env.mongo;
+
+// Prefix for chat commands (!command)
 const cmdPrefix = "!";
+
+// Active chat channels that have interacted with TokeBot
 var channels = {};
 
+// Discord client config
+const discord = require("discord.js");
 const discordClient = new discord.Client();
 discordClient.login(process.env.discord);
+
+// Fired whenever a chat message is received.
 discordClient.on("message", function (msg) {
     if (msg.author.bot) return;
+
     const channelId = msg.channel.id;
 
     if (!(channelId in channels)) {
         channels[channelId] = new tokeSession(msg.channel.id, msg.channel.name.toLowerCase());
         createChannelData(msg);
     }
+
+    // All messages should be checked for banned phrases but only messages that start with
+    // with the command prefix should be processed as commands.
     channels[channelId].checkForBannedPhrase(msg);
-
     if (!msg.content.startsWith(cmdPrefix)) return;
-
     channels[channelId].checkForCmd(msg);
 });
 
+// Create or update the channels data in the database.
 function createChannelData(msg) {
     MongoClient.connect(mongoConnectionUrl, function (err, db) {
         if (err) throw err;
@@ -46,16 +61,31 @@ function createChannelData(msg) {
 }
 
 function tokeSession(channelId, channelName) {
+    // Timer for toke sessions
     var tokeTimer;
+
+    // Timer for reminders
     var reminderTimer;
+
+    // Whether or not a session is running
     var sessionRunning = false;
-    var sessionRunning = false;
+
+    // Users particpating in the toke session
     var participants = [];
+
+    // Users pariticipating in the toke session "in spirit" (Alternate toke status)
     var spiritTokers = [];
+
+    // Amount of time (in ms) the sesion runs for.
     var sessionInterval = 300000;
+
+    // Amount of time (in ms) between reminders.
     var reminderInterval = 120000;
+
+    // Whether or not the 
     var initialized = false;
 
+    // TokeBot commands
     const commands = {
         "toke ping": ping,
         "toke records": postRecords,
@@ -70,11 +100,15 @@ function tokeSession(channelId, channelName) {
         "steam": toke,
         "vape": toke,
         "blaze": toke,
-        "pre": addParticipant,
+        // pretoke is a way of joining a session in advance. 
+        // Users are added straight to list of participants
+        "pre": addParticipant, 
+        
         "spirit": addSpiritToker,
         "dougdimmadab": toke
     };
 
+    // Phrases that will trigger a warning if said
     const bannedPhrases = [
         "lsd",
         "cocaine",
@@ -90,6 +124,8 @@ function tokeSession(channelId, channelName) {
         "pcp"
     ];
 
+    // The first part of a two part reply when a session ends.
+    // {sessionReplies1}. {sessionReplies2}.
     var sessionReplies1 = [
         "Toke it up!",
         "Blaze it!",
@@ -103,6 +139,8 @@ function tokeSession(channelId, channelName) {
         "It smells like a Cypress Hill concert in here!",
         "Man that was a good session."];
 
+    // The second part of a two part reply when a session ends.
+    // {sessionReplies1}. {sessionReplies2}.
     var sessionReplies2 = [
         "Getting stoned with",
         "Toking it up with",
@@ -119,12 +157,14 @@ function tokeSession(channelId, channelName) {
         initialized = true;
     }
 
+    // Checks a message to see if it contains a banned phrase.
     this.checkForBannedPhrase = function (msg) {
         if (new RegExp("\\b" + bannedPhrases.join("|") + "\\b").test(msg.content)) {
             applyWarning(msg);
         }
     }
 
+    // Applies a warning to a user who has said a banned phrase.
     function applyWarning(msg) {
         var warningNumber = 0;
 
@@ -148,11 +188,14 @@ function tokeSession(channelId, channelName) {
             msg.reply(`this is a cannabis only server. Please don't talk about other drugs. You have been warned ${warningNumber} times.`);
         } else {
             msg.reply(`this is a cannabis only server. Please don't talk about other drugs. FINAL WARNING!`);
+
+            // Alert the moderation team that the user has been warned the maximum number of times.
             const channel = discordClient.channels.cache.find(channel => channel.name.toLowerCase() === "moderation");
             channel.send(`${msg.author} has hit 3 warnings for talking about drugs.`);
         }
     }
 
+    // Log the message info of a banned phrase that resulted in a warning.
     function logWarnedMessage(msg, warningNumber) {
         MongoClient.connect(mongoConnectionUrl, function (err, db) {
             if (err) throw err;
@@ -172,11 +215,15 @@ function tokeSession(channelId, channelName) {
         });
     }
 
+    // Check to see if a message contains a command.
     this.checkForCmd = async function (msg) {
+
+        // We need to make sure the channel is initalized before we proceed.
         if (!initialized) {
             await init();
         }
 
+        // Remove the command prefix from the message
         msg.content = msg.content.slice(cmdPrefix.length);
 
         for (const [key, value] of Object.entries(commands)) {
@@ -187,15 +234,21 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Ping command
     function ping(msg) {
         const timeTaken = Date.now() - msg.createdTimestamp;
         msg.reply(`Pong! This message had a latency of ${timeTaken}ms.`);
     }
 
+    // Toke command
     function toke(msg, command) {
         const args = msg.content.slice(command.length).trim().split(' ');
 
+        // This command can be used two ways. If no number is entered as an argument, it is processed as a join / start. 
+        // If a number is entered it is processed as an update to the tokeInterval.
         if (isNaN(parseInt(args[0]))) {
+
+            // If a session isn't running we need to start one, otherwise we can add the user to the current session.
             if (!sessionRunning) {
                 if (canStartSession(msg)) {
                     startSession(msg, command);
@@ -211,14 +264,18 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Whether or not the use has the appropriate rank to start a toke sesion.
     function canStartSession(msg) {
         return msg.member.roles.cache.some(r => r.name === "Moderators") ||
             msg.member.roles.cache.some(r => r.name === "Veteran CC Members") ||
             msg.member.roles.cache.some(r => r.name === "Stoner");
     }
 
+    // Starts a toke session for the channel.
     function startSession(msg, command) {
         const author = msg.author.toString();
+
+        // We want a list of all the participants who aren't the author for use later.
         const filteredParticipants = participants.filter(function (p) {
             return p !== author;
         });
@@ -228,6 +285,7 @@ function tokeSession(channelId, channelName) {
             savePreTokeCount(participants.length);
         }
 
+        // Add the user starting the session.
         addParticipant(msg);
         timeStarted = Date.now();
 
@@ -245,22 +303,25 @@ function tokeSession(channelId, channelName) {
         console.log(`Starting session.`);
     }
 
+    // Set the amount of time a toke session lasts.
     function setTokeInterval(msg, minutes) {
-
         if (!isNaN(minutes)) {
             var intMinutes = parseInt(minutes);
 
+            // Range check the interval.
             if (intMinutes < 1) {
                 intMinutes = 1;
             } else if (intMinutes > 60) {
                 intMinutes = 60;
             }
 
+            // Convert to minutes to ms.
             sessionInterval = intMinutes * 60000;
             saveChannelTimes();
             console.log(`Toke interval set to ${intMinutes} (${sessionInterval}ms).`);
             msg.channel.send(`Updated the session time to ${intMinutes} minutes.`);
 
+            // Restart the session if it's running
             if (sessionRunning) {
                 clearTimeout(tokeTimer);
                 tokeTimer = setTimeout(function () {
@@ -281,16 +342,17 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Set the amount of time between reminders.
     function setReminderInterval(msg, command) {
         const args = msg.content.slice(command.length).trim().split(' ');
         var minutes = parseInt(args[0]);
 
+        // Range check the interval
         if (minutes < 1) {
             minutes = 1;
         } else if (minutes > 60) {
             minutes = 60;
         }
-
 
         if (!isNaN(minutes)) {
             reminderInterval = minutes * 60000;
@@ -299,6 +361,7 @@ function tokeSession(channelId, channelName) {
             msg.channel.send(`Updated the reminder time to ${minutes} minutes.`);
             clearInterval(reminderTimer);
 
+            // Restart the reminder timer if the session is running.
             if (sessionRunning) {
                 reminderTimer = setInterval(function () {
                     reminderTimerElapsed();
@@ -310,6 +373,8 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Add a user to spirit tokers list. Spirit tokers are just like regular tokers, except with a different status
+    // Used for when they want to join a session, but aren't toking
     function addSpiritToker(msg) {
         if (sessionRunning) {
             if (!spiritTokers.includes(msg.author.toString())) {
@@ -325,6 +390,7 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Add a user to the list of participants in a toke session.
     function addParticipant(msg) {
         if (!participants.includes(msg.author.toString())) {
             participants.push(msg.author.toString());
@@ -338,6 +404,7 @@ function tokeSession(channelId, channelName) {
         addSessionReact(msg);
     }
 
+    // Fired whenever tokeTimer elapses. The end of a toke sesion.
     function tokeTimerElapsed() {
         clearInterval(reminderTimer);
         clearTimeout(tokeTimer);
@@ -352,6 +419,7 @@ function tokeSession(channelId, channelName) {
         sessionRunning = false;
     }
 
+    // Fired whenver reminderTimer elapses. Posts a reminder.
     function reminderTimerElapsed() {
         if (sessionRunning) {
             console.log(`Reminder elapsed.`);
@@ -360,7 +428,10 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Adds a reaction to a message when a user starts or joins a session.
     function addSessionReact(msg) {
+
+        // Use custom emotes for certain servers.
         if (msg.guild.name.toLowerCase() == "chronicchat") {
             msg.react(`656156154837205012`);
         } else {
@@ -368,6 +439,7 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Saves sessionInterval and reminderInterval to the database.
     function saveChannelTimes() {
         MongoClient.connect(mongoConnectionUrl, function (err, db) {
             if (err) throw err;
@@ -392,6 +464,7 @@ function tokeSession(channelId, channelName) {
         });
     }
 
+    // Loads sessionInterval and reminderInterval from the database.
     async function loadChannelTimes() {
         const client = await MongoClient.connect(mongoConnectionUrl, { useNewUrlParser: true })
             .catch(err => { console.log(err); });
@@ -414,6 +487,7 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Saves the pretokers to the database.
     function savePreTokeCount(count) {
         MongoClient.connect(mongoConnectionUrl, function (err, db) {
             if (err) throw err;
@@ -433,6 +507,7 @@ function tokeSession(channelId, channelName) {
         });
     }
 
+    // Save the toke session data to the database
     function saveTokeCount(count, participants) {
         MongoClient.connect(mongoConnectionUrl, function (err, db) {
             if (err) throw err;
@@ -452,6 +527,8 @@ function tokeSession(channelId, channelName) {
         });
     }
 
+    // Post the toke session records for the channel. (Number of toke sessions, most users in a session,
+    // number sessions with pre tokes, most pretokes in a session)
     async function postRecords(msg, command) {
         const client = await MongoClient.connect(mongoConnectionUrl, { useNewUrlParser: true })
             .catch(err => { console.log(err); });
@@ -484,18 +561,23 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Timer to continually check to see if it's 4:20 somwhere.
     var four20Timer = setInterval(check420, 60000);
 
+    // Check to see if it's 4:20 in a timezone.
     function check420() {
         var date = new Date();
 
+        // We only want to post in the main channels and not every channel that has had a toke session.
         if (channelName === "main-chat" || channelName === "general") {
             if (date.getUTCMinutes() === 20) {
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                 var reply = get420Reply();
 
+                // Null reply means it's not 4:20
                 if (reply !== null) {
 
+                    // Start a session if there are pre tokers and a session isn't active.
                     if (participants.length > 0 && !sessionRunning) {
                         start420Session();
                         reply = reply.concat(` Starting a sesion with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
@@ -515,6 +597,7 @@ function tokeSession(channelId, channelName) {
         }
     }
 
+    // Create a reply containing the current timezone in which it is 4:20
     function get420Reply() {
         var reply = "It's currently 4:20 ";
         var date = new Date();
@@ -557,6 +640,7 @@ function tokeSession(channelId, channelName) {
         return reply;
     }
 
+    // Starts a toke session specifically for 4:20
     function start420Session() {
         sessionRunning = true;
         timeStarted = Date.now();
