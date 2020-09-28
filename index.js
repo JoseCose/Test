@@ -520,13 +520,17 @@ function tokeSession(channelId, channelName) {
         var date = new Date();
 
         switch (date.getUTCHours()) {
-            case 3:
-            case 15:
-                reply = reply.concat("in British Summer Time.");
+            case 0:
+            case 12:
+                reply = reply.concat("in Alaska Time.");
                 break;
             case 2:
             case 14:
-                reply = reply.concat("in South Africa Standard Time.");
+                reply = reply.concat("in Hawaii Time and South Africa Standard Time.");
+                break;
+            case 3:
+            case 15:
+                reply = reply.concat("in British Summer Time.");
                 break;
             case 8:
             case 20:
@@ -544,19 +548,10 @@ function tokeSession(channelId, channelName) {
             case 23:
                 reply =reply.concat("in Pacific Time.");
                 break;
-            case 12:
-            case 0:
-                reply = reply.concat("in Alaska Time.");
-                break;
-            case 14:
-            case 2:
-                reply = reply.concat("in Hawaii Time.");
-                break;
             default:
                 // We don't need to reply because we don't follow other timezones.
                 reply = null;
                 break;
-
         }
 
         return reply;
