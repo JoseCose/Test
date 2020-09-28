@@ -4,7 +4,7 @@ const discord = require("discord.js");
 var MongoClient = require('mongodb').MongoClient;
 var mongoConnectionUrl = process.env.mongo;
 const cmdPrefix = "!";
-var sessions = {};
+var channels = {};
 
 const discordClient = new discord.Client();
 discordClient.login(process.env.discord);
@@ -12,15 +12,15 @@ discordClient.on("message", function (msg) {
     if (msg.author.bot) return;
     const channelId = msg.channel.id;
 
-    if (!(channelId in sessions)) {
-        sessions[channelId] = new tokeSession(msg.channel.id, msg.channel.name.toLowerCase());
+    if (!(channelId in channels)) {
+        channels[channelId] = new tokeSession(msg.channel.id, msg.channel.name.toLowerCase());
         createChannelData(msg);
     }
-    sessions[channelId].checkForBannedPhrase(msg);
+    channels[channelId].checkForBannedPhrase(msg);
 
     if (!msg.content.startsWith(cmdPrefix)) return;
 
-    sessions[channelId].checkForCmd(msg);
+    channels[channelId].checkForCmd(msg);
 });
 
 function createChannelData(msg) {
