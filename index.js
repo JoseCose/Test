@@ -82,7 +82,7 @@ function tokeSession(channelId, channelName) {
     // Amount of time (in ms) between reminders.
     var reminderInterval = 120000;
 
-    // Whether or not the 
+    // Whether or not the the channel has been initialized.
     var initialized = false;
 
     // TokeBot commands
