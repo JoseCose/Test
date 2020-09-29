@@ -26,7 +26,7 @@ discordClient.on("message", function (msg) {
     const channelId = msg.channel.id;
 
     if (!(channelId in channels)) {
-        channels[channelId] = new tokeSession(msg.channel.id, msg.channel.name.toLowerCase());
+        channels[channelId] = new channel(msg.channel.id, msg.channel.name.toLowerCase());
         createChannelData(msg);
     }
 
@@ -59,7 +59,7 @@ function createChannelData(msg) {
     });
 }
 
-function tokeSession(channelId, channelName) {
+function channel(channelId, channelName) {
     // Timer for toke sessions
     var tokeTimer;
 
