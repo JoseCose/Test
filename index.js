@@ -66,6 +66,9 @@ function channel(channelId, channelName) {
     // Timer for reminders
     var reminderTimer;
 
+    // Timer to continually check to see if it's 4:20 somwhere.
+    var four20Timer = setInterval(check420, 60000);
+
     // Whether or not a session is running
     var sessionRunning = false;
 
@@ -547,9 +550,6 @@ function channel(channelId, channelName) {
             client.close();
         }
     }
-
-    // Timer to continually check to see if it's 4:20 somwhere.
-    var four20Timer = setInterval(check420, 60000);
 
     // Check to see if it's 4:20 in a timezone.
     function check420() {
