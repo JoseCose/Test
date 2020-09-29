@@ -1,5 +1,5 @@
 ﻿// DotEnv (environment variables).
-require('dotenv').config();
+var dotEnv = require('dotenv').config();
 
 // Node.js
 var http = require('http');
