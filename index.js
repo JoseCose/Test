@@ -39,7 +39,7 @@ discordClient.on("message", function (msg) {
 
 // Create or update the channels data in the database.
 function createChannelData(msg) {
-    MongoClient.connect(mongoConnectionUrl, function (err, db) {
+    MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true }, function (err, db) {
         if (err) throw err;
         var dbo = db.db("tokebot");
 
@@ -197,7 +197,7 @@ function tokeSession(channelId, channelName) {
 
     // Log the message info of a banned phrase that resulted in a warning.
     function logWarnedMessage(msg, warningNumber) {
-        MongoClient.connect(mongoConnectionUrl, function (err, db) {
+        MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true }, function (err, db) {
             if (err) throw err;
             var dbo = db.db("tokebot");
 
@@ -441,7 +441,7 @@ function tokeSession(channelId, channelName) {
 
     // Saves sessionInterval and reminderInterval to the database.
     function saveChannelTimes() {
-        MongoClient.connect(mongoConnectionUrl, function (err, db) {
+        MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true }, function (err, db) {
             if (err) throw err;
             var dbo = db.db("tokebot");
 
@@ -466,7 +466,7 @@ function tokeSession(channelId, channelName) {
 
     // Loads sessionInterval and reminderInterval from the database.
     async function loadChannelTimes() {
-        const client = await MongoClient.connect(mongoConnectionUrl, { useNewUrlParser: true })
+        const client = await MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true })
             .catch(err => { console.log(err); });
 
         if (!client) {
@@ -489,7 +489,7 @@ function tokeSession(channelId, channelName) {
 
     // Saves the pretokers to the database.
     function savePreTokeCount(count) {
-        MongoClient.connect(mongoConnectionUrl, function (err, db) {
+        MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true }, function (err, db) {
             if (err) throw err;
             var dbo = db.db("tokebot");
 
@@ -509,7 +509,7 @@ function tokeSession(channelId, channelName) {
 
     // Save the toke session data to the database
     function saveTokeCount(count, participants) {
-        MongoClient.connect(mongoConnectionUrl, function (err, db) {
+        MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true }, function (err, db) {
             if (err) throw err;
             var dbo = db.db("tokebot");
 
@@ -530,7 +530,7 @@ function tokeSession(channelId, channelName) {
     // Post the toke session records for the channel. (Number of toke sessions, most users in a session,
     // number sessions with pre tokes, most pretokes in a session)
     async function postRecords(msg, command) {
-        const client = await MongoClient.connect(mongoConnectionUrl, { useNewUrlParser: true })
+        const client = await MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true },)
             .catch(err => { console.log(err); });
 
         if (!client) {
