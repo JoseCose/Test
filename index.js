@@ -54,7 +54,6 @@ function createChannelData(msg) {
             };
         dbo.collection("channels").updateOne(keys, values, { upsert: true }, function (err, res) {
             if (err) throw err;
-            console.log(`Inserted channels data. Matched: ${res.matchedCount} Modified: ${res.modifiedCount} Upserted: ${res.upsertedCount}`);
             db.close();
         });
     });
@@ -209,7 +208,6 @@ function tokeSession(channelId, channelName) {
             };
             dbo.collection("warned_messages").insertOne(values, function (err, res) {
                 if (err) throw err;
-                console.log(`Inserted warned_messages data.`);
                 db.close();
             });
         });
@@ -300,7 +298,6 @@ function tokeSession(channelId, channelName) {
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` + filteredParticipants.join(", ") : "") +
             `. Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
         addSessionReact(msg);
-        console.log(`Starting session.`);
     }
 
     // Set the amount of time a toke session lasts.
@@ -318,7 +315,6 @@ function tokeSession(channelId, channelName) {
             // Convert to minutes to ms.
             sessionInterval = intMinutes * 60000;
             saveChannelTimes();
-            console.log(`Toke interval set to ${intMinutes} (${sessionInterval}ms).`);
             msg.channel.send(`Updated the session time to ${intMinutes} minutes.`);
 
             // Restart the session if it's running
@@ -328,14 +324,12 @@ function tokeSession(channelId, channelName) {
                     tokeTimerElapsed();
                 }, sessionInterval);
                 timeStarted = Date.now();
-                console.log(`Restarted timer.`);
 
                 // Restart the reminder timer to keep it even with the session timer. 
                 clearInterval(reminderTimer);
                 reminderTimer = setInterval(function () {
                     reminderTimerElapsed();
                 }, reminderInterval);
-                console.log(`Restarted reminder timer.`);
             }
         } else {
             msg.reply(`please enter a valid number for minutes.`);
@@ -357,7 +351,6 @@ function tokeSession(channelId, channelName) {
         if (!isNaN(minutes)) {
             reminderInterval = minutes * 60000;
             saveChannelTimes();
-            console.log(`Reminder interval set to ${minutes} minutes (${reminderInterval}ms).`);
             msg.channel.send(`Updated the reminder time to ${minutes} minutes.`);
             clearInterval(reminderTimer);
 
@@ -366,7 +359,6 @@ function tokeSession(channelId, channelName) {
                 reminderTimer = setInterval(function () {
                     reminderTimerElapsed();
                 }, reminderInterval);
-                console.log(`Restarted reminder timer.`);
             }
         } else {
             msg.reply(`please enter a valid number for minutes.`);
@@ -408,7 +400,6 @@ function tokeSession(channelId, channelName) {
     function tokeTimerElapsed() {
         clearInterval(reminderTimer);
         clearTimeout(tokeTimer);
-        console.log(`Session elapsed.`);
         const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
         channel.send(`${sessionReplies1[Math.floor(Math.random() * sessionReplies1.length)]}` +
             ` ${sessionReplies2[Math.floor(Math.random() * sessionReplies2.length)]} ${participants.join(", ")}.` +
@@ -422,7 +413,6 @@ function tokeSession(channelId, channelName) {
     // Fired whenver reminderTimer elapses. Posts a reminder.
     function reminderTimerElapsed() {
         if (sessionRunning) {
-            console.log(`Reminder elapsed.`);
             const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
             channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
         }
@@ -458,7 +448,6 @@ function tokeSession(channelId, channelName) {
             };
             dbo.collection("session_times").updateOne(keys, values, { upsert: true }, function (err, res) {
                 if (err) throw err;
-                console.log(`Inserted session_times data. Matched: ${res.matchedCount} Modified: ${res.modifiedCount} Upserted: ${res.upsertedCount}`);
                 db.close();
             });
         });
@@ -501,7 +490,6 @@ function tokeSession(channelId, channelName) {
             };
             dbo.collection("pretoke_counts").insertOne(values, function (err, res) {
                 if (err) throw err;
-                console.log(`Inserted pretoke_counts data.`);
                 db.close();
             });
         });
@@ -521,7 +509,6 @@ function tokeSession(channelId, channelName) {
             };
             dbo.collection("toke_counts").insertOne(values, function (err, res) {
                 if (err) throw err;
-                console.log(`Inserted toke_counts data.`);
                 db.close();
             });
         });
@@ -652,8 +639,6 @@ function tokeSession(channelId, channelName) {
         reminderTimer = setInterval(function () {
             reminderTimerElapsed();
         }, reminderInterval);
-
-        console.log(`Starting 420 session.`);
     }
 
     return this;
