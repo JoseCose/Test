@@ -67,7 +67,7 @@ function channel(channelId, channelName) {
     var reminderTimer;
 
     // Timer to continually check to see if it's 4:20 somwhere.
-    var four20Timer = setInterval(check420, 60000);
+    var timeCheckTimer = setInterval(checkTime, 60000);
 
     // Whether or not a session is running
     var sessionRunning = false;
@@ -552,35 +552,35 @@ function channel(channelId, channelName) {
     }
 
     // Check to see if it's 4:20 in a timezone.
-    function check420() {
-        var date = new Date();
-
+    function checkTime() {
+        
         // We only want to post in the main channels and not every channel that has had a toke session.
         if (channelName === "main-chat" || channelName === "general") {
+            var date = new Date();
+            const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+            var reply = null;
+            
             if (date.getUTCMinutes() === 20) {
-                const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
-                var reply = get420Reply();
+                reply = get420Reply();
+            } else if (date.getUTCMinutes() === 10) {
+                reply = get710Reply();
+            }
 
-                // Null reply means it's not 4:20
-                if (reply !== null) {
+            // Null reply means it's not 4:20
+            if (reply !== null) {
 
-                    // Start a session if there are pre tokers and a session isn't active.
-                    if (participants.length > 0 && !sessionRunning) {
-                        start420Session();
-                        reply = reply.concat(` Starting a sesion with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
-                    }
-
-                    channel.send(reply);
+                // Start a session if there are pre tokers and a session isn't active.
+                if (participants.length > 0 && !sessionRunning) {
+                    startSessionTimers();
+                    reply = reply.concat(` Starting a session with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
                 }
 
-                // Call again in one hour.
-                clearInterval(four20Timer);
-                four20Timer = setInterval(check420, 3600000);
+                channel.send(reply);
             }
         }
         else {
             // We don't need to check again because we're not in a main channel.
-            clearInterval(four20Timer);
+            clearInterval(timeCheckTimer);
         }
     }
 
@@ -627,8 +627,8 @@ function channel(channelId, channelName) {
         return reply;
     }
 
-    // Starts a toke session specifically for 4:20
-    function start420Session() {
+    // Starts toke session timers.
+    function startSessionTimers() {
         if (!sessionRunning) {
             sessionRunning = true;
             timeStarted = Date.now();
@@ -641,6 +641,49 @@ function channel(channelId, channelName) {
                 reminderTimerElapsed();
             }, reminderInterval);
         }
+    }
+
+    // Create a reply containing the current timezone in which it is 7:10
+    function get710Reply() {
+        var reply = "It's currently 7:10 ";
+        var date = new Date();
+
+        switch (date.getUTCHours()) {
+            case 3:
+            case 15:
+                reply = reply.concat("in Alaska Time.");
+                break;
+            case 5:
+            case 17:
+                reply = reply.concat("in Hawaii Time and South Africa Standard Time.");
+                break;
+            case 6:
+            case 18:
+                reply = reply.concat("in British Summer Time.");
+                break;
+            case 22:
+            case 23:
+                reply = reply.concat("in Eastern Time.");
+                break;
+            case 12:
+            case 24:
+                reply = reply.concat("in Central Time.");
+                break;
+            case 13:
+            case 25:
+                reply = reply.concat("in Mountain Time.");
+                break;
+            case 14:
+            case 2:
+                reply = reply.concat("in Pacific Time.");
+                break;
+            default:
+                // We don't need to reply because we don't follow other timezones.
+                reply = null;
+                break;
+        }
+
+        return reply;
     }
 
     return this;
