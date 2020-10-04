@@ -629,16 +629,18 @@ function channel(channelId, channelName) {
 
     // Starts a toke session specifically for 4:20
     function start420Session() {
-        sessionRunning = true;
-        timeStarted = Date.now();
+        if (!sessionRunning) {
+            sessionRunning = true;
+            timeStarted = Date.now();
 
-        tokeTimer = setTimeout(function () {
-            tokeTimerElapsed();
-        }, sessionInterval);
+            tokeTimer = setTimeout(function () {
+                tokeTimerElapsed();
+            }, sessionInterval);
 
-        reminderTimer = setInterval(function () {
-            reminderTimerElapsed();
-        }, reminderInterval);
+            reminderTimer = setInterval(function () {
+                reminderTimerElapsed();
+            }, reminderInterval);
+        }
     }
 
     return this;
