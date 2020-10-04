@@ -620,7 +620,6 @@ function channel(channelId, channelName) {
 
     // Starts toke session timers.
     function startSessionTimers() {
-        if (!sessionRunning) {
             sessionRunning = true;
             timeStarted = Date.now();
 
@@ -631,7 +630,6 @@ function channel(channelId, channelName) {
             reminderTimer = setInterval(function () {
                 reminderTimerElapsed();
             }, reminderInterval);
-        }
     }
 
     // Create a reply containing the current timezone in which it is 7:10
