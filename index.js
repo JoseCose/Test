@@ -275,12 +275,11 @@ function channel(channelId, channelName) {
     // Starts a toke session for the channel.
     function startSession(msg, command) {
         const author = msg.author.toString();
-
+        
         // We want a list of all the participants who aren't the author for use later.
         const filteredParticipants = participants.filter(function (p) {
             return p !== author;
         });
-        sessionRunning = true;
 
         if (participants.length > 0) {
             savePreTokeCount(participants.length);
@@ -288,16 +287,8 @@ function channel(channelId, channelName) {
 
         // Add the user starting the session.
         addParticipant(msg);
-        timeStarted = Date.now();
 
-        tokeTimer = setTimeout(function () {
-            tokeTimerElapsed();
-        }, sessionInterval);
-
-        reminderTimer = setInterval(function () {
-            reminderTimerElapsed();
-        }, reminderInterval);
-
+        startSessionTimers();
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` + filteredParticipants.join(", ") : "") +
             `. Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
         addSessionReact(msg);
