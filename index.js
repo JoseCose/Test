@@ -638,37 +638,9 @@ function channel(channelId, channelName) {
         var date = new Date();
 
         switch (date.getUTCHours()) {
-            case 3:
-            case 15:
-                reply = reply.concat("in Alaska Time.");
-                break;
-            case 5:
-            case 17:
-                reply = reply.concat("in Hawaii Time and South Africa Standard Time.");
-                break;
-            case 6:
-            case 18:
-                reply = reply.concat("in British Summer Time.");
-                break;
-            case 22:
-            case 23:
-                reply = reply.concat("in Eastern Time.");
-                break;
-            case 12:
-            case 24:
-                reply = reply.concat("in Central Time.");
-                break;
             case 13:
-            case 25:
-                reply = reply.concat("in Mountain Time.");
-                break;
-            case 14:
-            case 2:
-                reply = reply.concat("in Pacific Time.");
-                break;
-            default:
-                // We don't need to reply because we don't follow other timezones.
-                reply = null;
+            case 1:
+                reply = reply.concat("in Colorado.");
                 break;
         }
 
