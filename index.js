@@ -642,6 +642,10 @@ function channel(channelId, channelName) {
             case 1:
                 reply = reply.concat("in Colorado.");
                 break;
+            default:
+                // We don't need to reply because we don't follow other timezones.
+                reply = null;
+                break;
         }
 
         return reply;
