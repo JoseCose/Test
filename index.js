@@ -581,32 +581,32 @@ function channel(channelId, channelName) {
         var date = new Date();
 
         switch (date.getUTCHours()) {
-            case 0:
-            case 12:
+            case 1:
+            case 13:
                 reply = reply.concat("in Alaska Time.");
                 break;
             case 2:
             case 14:
                 reply = reply.concat("in Hawaii Time and South Africa Standard Time.");
                 break;
-            case 3:
-            case 15:
+            case 4:
+            case 16:
                 reply = reply.concat("in British Summer Time.");
-                break;
-            case 8:
-            case 20:
-                reply = reply.concat("in Eastern Time.");
                 break;
             case 9:
             case 21:
-                reply = reply.concat("in Central Time.");
+                reply = reply.concat("in Eastern Time.");
                 break;
             case 10:
             case 22:
-                reply = reply.concat("in Mountain Time.");
+                reply = reply.concat("in Central Time.");
                 break;
             case 11:
             case 23:
+                reply = reply.concat("in Mountain Time.");
+                break;
+            case 12:
+            case 0:
                 reply =reply.concat("in Pacific Time.");
                 break;
             default:
