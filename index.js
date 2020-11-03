@@ -638,8 +638,8 @@ function channel(channelId, channelName) {
         var date = new Date();
 
         switch (date.getUTCHours()) {
-            case 13:
-            case 1:
+            case 14:
+            case 2:
                 reply = reply.concat("in Colorado.");
                 break;
             default:
