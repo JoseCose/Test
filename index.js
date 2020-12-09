@@ -94,6 +94,7 @@ function channel(channelId, channelName) {
         "toke reminder": setReminderInterval,
         "toke users": postTokeParticipants,
         "toke participants": postTokeParticipants,
+        "tokers": postTokeParticipants,
         "toke": toke,
         "bong": toke,
         "pipe": toke,
