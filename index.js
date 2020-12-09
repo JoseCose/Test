@@ -96,6 +96,7 @@ function channel(channelId, channelName) {
         "toke reminder": setReminderInterval,
         "toke users": postTokeParticipants,
         "toke participants": postTokeParticipants,
+        "toke end": endSession,
         "tokers": postTokeParticipants,
         "toke": toke,
         "bong": toke,
@@ -717,6 +718,17 @@ function channel(channelId, channelName) {
                 msg.reply(`Could not find weather for ${location}`);
             }
         });
+    }
+
+    function endSession(msg, command) {
+        if (!canStartSession(msg)) return;
+
+        if (sessionRunning) {
+            tokeTimerElapsed();
+        }
+        else {
+            msg.reply("There is no active toke session.")
+        }
     }
 
     return this;
