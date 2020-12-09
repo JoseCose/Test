@@ -92,6 +92,8 @@ function channel(channelId, channelName) {
         "toke ping": ping,
         "toke records": postRecords,
         "toke reminder": setReminderInterval,
+        "toke users": postTokeParticipants,
+        "toke participants": postTokeParticipants,
         "toke": toke,
         "bong": toke,
         "pipe": toke,
@@ -649,6 +651,17 @@ function channel(channelId, channelName) {
         }
 
         return reply;
+    }
+
+    function postTokeParticipants() {
+        const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+
+        if (sessionRunning) {
+            channel.send((participants.length > 0 ? "Current tokers: " + participants.join(", ") + '.' : "") +
+                (spiritTokers.length > 0 ? " Toking in spirit: " + spiritTokers.join(", ") + '.' : ""), { "allowedMentions": { "users": [] } });
+        } else {
+            channel.send(participants.length > 0 ? ("Pretokers waiting to smoke: " + participants.join(", ") + ".") : "There is not currently a session running and there are no pre tokers.", { "allowedMentions": { "users": [] } });
+        }
     }
 
     return this;
