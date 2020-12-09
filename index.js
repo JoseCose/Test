@@ -326,6 +326,8 @@ function channel(channelId, channelName) {
 
     // Set the amount of time a toke session lasts.
     function setTokeInterval(msg, minutes) {
+        if (!canStartSession(msg)) return;
+
         if (!isNaN(minutes)) {
             var intMinutes = parseInt(minutes);
 
@@ -362,6 +364,8 @@ function channel(channelId, channelName) {
 
     // Set the amount of time between reminders.
     function setReminderInterval(msg, command) {
+        if (!canStartSession(msg)) return;
+
         const args = msg.content.slice(command.length).trim().split(' ');
         var minutes = parseInt(args[0]);
 
