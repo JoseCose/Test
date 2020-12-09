@@ -117,6 +117,11 @@ function channel(channelId, channelName) {
         "spliff": toke,
         "chronic": toke,
         "marijuana": toke,
+        "bud": toke,
+        "concentrate": toke,
+        "shatter": toke,
+        "wax": toke,
+        "cart": toke,
         "dougdimmadab": toke,
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
