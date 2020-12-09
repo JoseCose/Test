@@ -134,6 +134,7 @@ function channel(channelId, channelName) {
         "satan": toke,
         "devil": toke,
         "beelzebub": toke,
+        "ganja": toke,
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
         "pre": addParticipant, 
