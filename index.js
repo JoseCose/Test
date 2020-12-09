@@ -691,6 +691,7 @@ function channel(channelId, channelName) {
         return reply;
     }
 
+    // Posts the participants of a toke sesion.
     function postTokeParticipants() {
         const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
 
@@ -702,6 +703,7 @@ function channel(channelId, channelName) {
         }
     }
 
+    // Posts the current weather for a specified location.
     function postWeather(msg, command) {
         const location = msg.content.slice(command.length).trim();
 
@@ -723,6 +725,7 @@ function channel(channelId, channelName) {
         });
     }
 
+    // Ends a toke session if one is currently running
     function endSession(msg, command) {
         if (!canStartSession(msg)) return;
 
@@ -734,14 +737,15 @@ function channel(channelId, channelName) {
         }
     }
 
-    // Converts time from 24 hour format to 12 hour format.
+    // Converts time from 24 hour format to 12 hour format
+    // https://stackoverflow.com/questions/13898423/javascript-convert-24-hour-time-of-day-string-to-12-hour-time-with-am-pm-and-no/13899011
     function timeConvert(time) {
         // Check correct time format and split into components
         time = time.toString().match(/^([01]\d|2[0-3])(:)([0-5]\d)(:[0-5]\d)?$/) || [time];
 
         if (time.length > 1) { // If time format correct
             time = time.slice(1);  // Remove full string match value
-            time[5] = +time[0] < 12 ? 'AM' : 'PM'; // Set AM/PM
+            time[5] = +time[0] < 12 ? ' AM' : ' PM'; // Set AM/PM
             time[0] = +time[0] % 12 || 12; // Adjust hours
         }
         return time.join(''); // return adjusted time or original string
