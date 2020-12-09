@@ -409,7 +409,10 @@ function channel(channelId, channelName) {
 
     // Fired whenver reminderTimer elapses. Posts a reminder.
     function reminderTimerElapsed() {
-        if (sessionRunning) {
+        const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+
+        // We only want to post the reminder if TokeBot wasn't the last to send a message.
+        if (sessionRunning && !(channel.lastMessage.author.tag === discordClient.user.tag)) {
             const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
             channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
         }
