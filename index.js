@@ -105,12 +105,25 @@ function channel(channelId, channelName) {
         "steam": toke,
         "vape": toke,
         "blaze": toke,
+        "weed": toke,
+        "rosin": toke,
+        "live": toke,
+        "hash": toke,
+        "pot": toke,
+        "cannabis": toke,
+        "dyna": toke,
+        "resin": toke,
+        "burn": toke,
+        "spliff": toke,
+        "chronic": toke,
+        "marijuana": toke,
+        "dougdimmadab": toke
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
         "pre": addParticipant, 
         
         "spirit": addSpiritToker,
-        "dougdimmadab": toke
+
     };
 
     // Phrases that will trigger a warning if said
