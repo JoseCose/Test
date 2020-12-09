@@ -445,7 +445,7 @@ function channel(channelId, channelName) {
     function reminderTimerElapsed() {
         const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
 
-        // We only want to post the reminder if TokeBot wasn't the last to send a message.
+        // We only want to post the reminder if the last message was a reminder.
         if (sessionRunning && !(channel.lastMessage.author.tag === discordClient.user.tag)) {
             const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
             channel.send(`Toke session in progress. Type !toke to join. Ending in ${Math.round((sessionInterval - (Date.now() - timeStarted)) / 60000)} minutes.`);
@@ -747,7 +747,9 @@ function channel(channelId, channelName) {
             time = time.slice(1);  // Remove full string match value
             time[5] = +time[0] < 12 ? ' AM' : ' PM'; // Set AM/PM
             time[0] = +time[0] % 12 || 12; // Adjust hours
+            time[3] = ""; // Remove seconds.
         }
+
         return time.join(''); // return adjusted time or original string
     }
 
