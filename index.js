@@ -4,6 +4,8 @@ var dotEnv = require('dotenv').config();
 // Node.js
 var http = require('http');
 
+var weather = require('weather-js');
+
 // MongoDB config
 var MongoClient = require('mongodb').MongoClient;
 var mongoConnectionUrl = process.env.mongo;
@@ -126,9 +128,8 @@ function channel(channelId, channelName) {
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
         "pre": addParticipant, 
-        
         "spirit": addSpiritToker,
-
+        "weather": postWeather
     };
 
     // Phrases that will trigger a warning if said
@@ -684,6 +685,26 @@ function channel(channelId, channelName) {
         } else {
             channel.send(participants.length > 0 ? ("Pretokers waiting to smoke: " + participants.join(", ") + ".") : "There is not currently a session running and there are no pre tokers.", { "allowedMentions": { "users": [] } });
         }
+    }
+
+    function postWeather(msg, command) {
+        const location = msg.content.slice(command.length).trim();
+
+        if (location === "") {
+            msg.reply("Please enter a city to get the weather for.");
+            return;
+        }
+
+        weather.find({ search: location, degreeType: 'F' }, function (err, result) {
+            if (err) return;
+
+            if (result.length > 0) {
+                const degreesC = Math.round((parseInt(result[0].current.temperature) - 32) * 5 / 9);
+                msg.reply(`The weather in ${result[0].location.name} is ${result[0].current.skytext}. It is currently ${result[0].current.temperature}°F / ${degreesC}°C.`);
+            } else {
+                msg.reply(`Could not find weather for ${location}`);
+            }
+        });
     }
 
     return this;
