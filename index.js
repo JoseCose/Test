@@ -300,7 +300,8 @@ function channel(channelId, channelName) {
     function canStartSession(msg) {
         return msg.member.roles.cache.some(r => r.name === "Moderators") ||
             msg.member.roles.cache.some(r => r.name === "Veteran CC Members") ||
-            msg.member.roles.cache.some(r => r.name === "Stoner");
+            msg.member.roles.cache.some(r => r.name === "Stoner") ||
+            msg.member.roles.cache.some(r => r.name === "Nitro Booster");
     }
 
     // Starts a toke session for the channel.
