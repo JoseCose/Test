@@ -408,13 +408,13 @@ function channel(channelId, channelName) {
     // Used for when they want to join a session, but aren't toking
     function addSpiritToker(msg) {
         if (sessionRunning) {
-            if (!spiritTokers.includes(msg.author.toString())) {
-                spiritTokers.push(msg.author.toString());
+            if (!spiritTokers.includes("<@" + msg.author.id + ">")) {
+                spiritTokers.push("<@" + msg.author.id + ">");
             }
 
             // If they are joining the spirit session they don't need to be in participants anymore.
-            if (participants.includes(msg.author.toString())) {
-                participants.splice(msg.author.toString());
+            if (participants.includes("<@" + msg.author.id + ">")) {
+                participants.splice("<@" + msg.author.id + ">");
             }
 
             addSessionReact(msg);
@@ -423,13 +423,13 @@ function channel(channelId, channelName) {
 
     // Add a user to the list of participants in a toke session.
     function addParticipant(msg) {
-        if (!participants.includes(msg.author.toString())) {
-            participants.push(msg.author.toString());
+        if (!participants.includes("<@" + msg.author.id + ">")) {
+            participants.push("<@" + msg.author.id + ">");
         }
 
         // If they are joining the session they don't need to be in spirit tokers anymore.
-        if (spiritTokers.includes(msg.author.toString())) {
-            spiritTokers.splice(msg.author.toString());
+        if (spiritTokers.includes("<@" + msg.author.id + ">")) {
+            spiritTokers.splice("<@" + msg.author.id + ">");
         }
 
         addSessionReact(msg);
