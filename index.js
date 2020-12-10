@@ -142,6 +142,7 @@ function channel(channelId, channelName) {
         "d8": toke,
         "cbd": toke,
         "thc": toke,
+        "post": toke,
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
         "pre": addParticipant, 
