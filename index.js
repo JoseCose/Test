@@ -578,9 +578,17 @@ function channel(channelId, channelName) {
             var preTokeRes = await preTokeDbo.find(preTokeKeys).sort(preTokeSort).toArray();
 
             const channel = discordClient.channels.cache.find(channel => channel.id == channelId);
-            channel.send(`There have been ${tokeRes.length} toke sessions in ${msg.channel}. ${preTokeRes.length} had pre tokes. \n` +
-                `Largest toke session: ${tokeRes.length > 0 ? tokeRes[0].count : 0} tokers. \n` +
-                `Largest pre toke session: ${preTokeRes.length > 0 ? preTokeRes[0].count : 0} pre tokers.`);
+            const embed = new discord.MessageEmbed()
+                .setColor('#0099ff')
+                .setTitle('Toke Records')
+                .addFields(
+                    { name: `Total toke sessions in #${msg.channel.name}`, value: tokeRes.length },
+                    { name: `Total sessions with pre tokes in #${msg.channel.name}`, value: preTokeRes.length },
+                    { name: 'Largest toke session', value: `${tokeRes.length > 0 ? tokeRes[0].count : 0} tokers.` },
+                    { name: 'Largest pre toke session', value: `${preTokeRes.length > 0 ? preTokeRes[0].count : 0} pre tokers.` },
+                );
+
+            channel.send(embed);
             
         } catch (err) {
             console.log(err);
