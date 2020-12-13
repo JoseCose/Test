@@ -201,7 +201,7 @@ function channel(channelId, channelName) {
 
     // Checks a message to see if it contains a banned phrase.
     this.checkForBannedPhrase = function (msg) {
-        if (new RegExp("\\b" + bannedPhrases.join("|") + "\\b").test(msg.content)) {
+        if (new RegExp("(\\b(" + bannedPhrases.join("|") + ")\\b)").test(msg.content.toLowerCase())) {
             applyWarning(msg);
         }
     }
