@@ -673,19 +673,19 @@ function channel(channelId, channelName) {
                 break;
             case 3:
             case 15:
-                reply = reply.concat("in New Zealand.");
+                reply = reply.concat("in Amsterdam and New Zealand.");
                 break;
             case 4:
             case 16:
-                reply = reply.concat("in Amsterdam.");
+                reply = reply.concat("in Dublin.");
                 break;
             case 5:
             case 17:
-                reply = reply.concat("in Dublin.");
+                reply = reply.concat("in Azores Islands and Australia.");
                 break;
             case 6:
             case 18:
-                reply = reply.concat("in Azores Islands.");
+                reply = reply.concat("in South Sandwich Islands.");
                 break;
             case 7:
             case 19:
