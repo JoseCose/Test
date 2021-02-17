@@ -665,19 +665,35 @@ function channel(channelId, channelName) {
         switch (date.getUTCHours()) {
             case 1:
             case 13:
-                reply = reply.concat("in Alaska Time.");
+                reply = reply.concat("in Alaska.");
                 break;
             case 2:
             case 14:
-                reply = reply.concat("in Hawaii Time and South Africa Standard Time.");
+                reply = reply.concat("in Hawaii and South Africa.");
+                break;
+            case 3:
+            case 15:
+                reply = reply.concat("in New Zealand.");
                 break;
             case 4:
             case 16:
-                reply = reply.concat("in British Summer Time.");
+                reply = reply.concat("in Amsterdam.");
+                break;
+            case 5:
+            case 17:
+                reply = reply.concat("in Dublin.");
+                break;
+            case 6:
+            case 18:
+                reply = reply.concat("in Azores Islands.");
+                break;
+            case 7:
+            case 19:
+                reply = reply.concat("in Buenos Aires.");
                 break;
             case 8:
             case 20:
-                reply = reply.concat("in Atlantic Standard Time.");
+                reply = reply.concat("in Puerto Rico.");
                 break;
             case 9:
             case 21:
