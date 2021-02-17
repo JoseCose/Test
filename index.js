@@ -675,6 +675,10 @@ function channel(channelId, channelName) {
             case 16:
                 reply = reply.concat("in British Summer Time.");
                 break;
+            case 8:
+            case 20:
+                reply = reply.concat("in Atlantic Standard Time.");
+                break;
             case 9:
             case 21:
                 reply = reply.concat("in Eastern Time.");
