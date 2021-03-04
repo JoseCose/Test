@@ -168,6 +168,16 @@ function channel(channelId, channelName) {
         "loud": toke,
         "gas": toke,
         "kush": toke,
+        "toasted": toke,
+        "baked": toke,
+        "stoned": toke,
+        "high": toke,
+        "cheers": toke,
+        "salud": toke,
+        "bake": toke,
+        "wake": toke,
+        "cooked": toke,
+        "fried": toke,
         "suppository": toke,
         // pretoke is a way of joining a session in advance. 
         // Users are added straight to list of participants
