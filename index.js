@@ -179,9 +179,9 @@ function channel(channelId, channelName) {
         "cooked": toke,
         "fried": toke,
         "suppository": toke,
-        // pretoke is a way of joining a session in advance. 
+        // pretoke is a way of joining a session in advance.
         // Users are added straight to list of participants
-        "pre": addParticipant, 
+        "pre": addParticipant,
         "spirit": addSpiritToker,
         "weather": postWeather
     };
@@ -321,7 +321,7 @@ function channel(channelId, channelName) {
     function toke(msg, command) {
         const args = msg.content.slice(command.length).trim().split(' ');
 
-        // This command can be used two ways. If no number is entered as an argument, it is processed as a join / start. 
+        // This command can be used two ways. If no number is entered as an argument, it is processed as a join / start.
         // If a number is entered it is processed as an update to the tokeInterval.
         if (isNaN(parseInt(args[0]))) {
 
@@ -343,16 +343,17 @@ function channel(channelId, channelName) {
 
     // Whether or not the use has the appropriate rank to start a toke sesion.
     function canStartSession(msg) {
-        return msg.member.roles.cache.some(r => r.name === "Moderators") ||
-            msg.member.roles.cache.some(r => r.name === "Veteran CC Members") ||
-            msg.member.roles.cache.some(r => r.name === "Stoner") ||
-            msg.member.roles.cache.some(r => r.name === "Nitro Booster");
+        var name = r.name.toLowerCase();
+        return msg.member.roles.cache.some(name.includes("mod")) ||
+            msg.member.roles.cache.some(r => r.name === "veteran cc members") ||
+            msg.member.roles.cache.some(r => r.name === "stoner") ||
+            msg.member.roles.cache.some(r => r.name === "nitro booster");
     }
 
     // Starts a toke session for the channel.
     function startSession(msg, command) {
         const author = msg.author.toString();
-        
+
         // We want a list of all the participants who aren't the author for use later.
         const filteredParticipants = participants.filter(function (p) {
             return p !== author;
@@ -398,7 +399,7 @@ function channel(channelId, channelName) {
                 }, sessionInterval);
                 timeStarted = Date.now();
 
-                // Restart the reminder timer to keep it even with the session timer. 
+                // Restart the reminder timer to keep it even with the session timer.
                 clearInterval(reminderTimer);
                 reminderTimer = setInterval(function () {
                     reminderTimerElapsed();
@@ -561,7 +562,7 @@ function channel(channelId, channelName) {
             var dbo = db.db("tokebot");
 
             var values = {
-                channel_id: channelId, 
+                channel_id: channelId,
                 count: count,
                 participants: participants,
                 time: new Date().toLocaleString()
@@ -626,7 +627,7 @@ function channel(channelId, channelName) {
                 );
 
             channel.send(embed);
-            
+
         } catch (err) {
             console.log(err);
         } finally {
@@ -636,13 +637,13 @@ function channel(channelId, channelName) {
 
     // Check to see if it's 4:20 in a timezone.
     function checkTime() {
-        
+
         // We only want to post in the main channels and not every channel that has had a toke session.
         if (channelName === "main-chat" || channelName === "general") {
             var date = new Date();
             const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
             var reply = null;
-            
+
             if (date.getUTCMinutes() === 20) {
                 reply = get420Reply();
             } else if (date.getUTCMinutes() === 10) {
