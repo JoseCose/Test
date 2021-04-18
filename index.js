@@ -343,11 +343,10 @@ function channel(channelId, channelName) {
 
     // Whether or not the use has the appropriate rank to start a toke sesion.
     function canStartSession(msg) {
-        var name = r.name.toLowerCase();
-        return msg.member.roles.cache.some(name.includes("mod")) ||
-            msg.member.roles.cache.some(r => r.name === "veteran cc members") ||
-            msg.member.roles.cache.some(r => r.name === "stoner") ||
-            msg.member.roles.cache.some(r => r.name === "nitro booster");
+        return msg.member.roles.cache.some(r => r.name.toLowerCase().includes("mod")) ||
+            msg.member.roles.cache.some(r => r.name.toLowerCase() === "veteran cc members") ||
+            msg.member.roles.cache.some(r => r.name.toLowerCase() === "stoner") ||
+            msg.member.roles.cache.some(r => r.name.toLowerCase() === "nitro booster");
     }
 
     // Starts a toke session for the channel.
