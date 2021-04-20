@@ -638,7 +638,7 @@ function channel(channelId, channelName) {
     function checkTime() {
 
         // We only want to post in the main channels and not every channel that has had a toke session.
-        if (channelName === "main-chat" || channelName === "general") {
+        if (channelName === "🗣main-chat" || channelName === "general") {
             var date = new Date();
             const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
             var reply = null;
