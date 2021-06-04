@@ -146,7 +146,8 @@ function channel(channelId, channelName) {
         "d9": toke,
         "cbd": toke,
         "thc": toke,
-        "post": toke,
+        "postmalone": toke,
+        "post malone": toke,
         "dagga": toke,
         "magicman": toke,
         "blastoff": toke,
@@ -179,9 +180,17 @@ function channel(channelId, channelName) {
         "cooked": toke,
         "fried": toke,
         "suppository": toke,
+        "re": toke,
+        "baby": toke,
+        "hella": toke,
+        "chillum": toke,
+        "one hitter": toke,
+        "onehitter" : toke,
         // pretoke is a way of joining a session in advance.
         // Users are added straight to list of participants
         "pre": addParticipant,
+        "early": addParticipant,
+        "late": addParticipant,
         "spirit": addSpiritToker,
         "weather": postWeather
     };
@@ -215,7 +224,12 @@ function channel(channelId, channelName) {
         "Blunts, and bongs, and dabs, Oh my!",
         "Get cyber stoned and download some happiness!",
         "It smells like a Cypress Hill concert in here!",
-        "Man that was a good session."];
+        "Man that was a good session.",
+        "Damn son! Where'd you find this!",
+        "I smell it! Let me inhale it!",
+        "Damn that's dank!",
+        "Did somebody bring munchies?"
+    ];
 
     // The second part of a two part reply when a session ends.
     // {sessionReplies1}. {sessionReplies2}.
@@ -226,7 +240,10 @@ function channel(channelId, channelName) {
         "Stoned with the homies",
         "That was a nice session with",
         "Blazing with",
-        "Burning one with"
+        "Burning one with",
+        "Getting lit with",
+        "Seshing with",
+        "Getting blazed with"
     ];
 
     // Initialize the channel data
