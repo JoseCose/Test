@@ -692,23 +692,26 @@ function channel(channelId, channelName) {
         switch (date.getUTCHours()) {
             case 1:
             case 13:
-                reply = reply.concat("in Hawaii and South Africa.");
+                reply = reply.concat("in Finland.");
                 break;
             case 2:
             case 14:
-                reply = reply.concat("in Finland.");
+                reply = reply.concat("in Hawaii and South Africa.");
                 break;
+            case 3:
+            case 15:
+                reply = reply.concat("in London and Dublin.");
             case 4:
             case 16:
-                reply = reply.concat("in Dublin.");
+                reply = reply.concat("in Azores Islads.");
                 break;
             case 5:
             case 17:
-                reply = reply.concat("in Azores Islands and Australia.");
+                reply = reply.concat("Somewhere in the Atlantic Ocean.");
                 break;
             case 6:
             case 18:
-                reply = reply.concat("in South Sandwich Islands.");
+                reply = reply.concat("in South Sandwich Islands and Australia.");
                 break;
             case 7:
             case 19:
