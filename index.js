@@ -185,7 +185,8 @@ function channel(channelId, channelName) {
         "hella": toke,
         "chillum": toke,
         "one hitter": toke,
-        "onehitter" : toke,
+        "onehitter": toke,
+        "terp": toke,
         // pretoke is a way of joining a session in advance.
         // Users are added straight to list of participants
         "pre": addParticipant,
