@@ -666,7 +666,7 @@ function channel(channelId, channelName) {
     // Check to see if it's 4:20 in a timezone.
     function checkTime() {
             // We only want to post in the main channels and not every channel that has had a toke session.
-            if (channelName === "🗣smoke-circle" || channelName === "general" || channelName === "general-hospital") {
+            if (channelName === "🗣smoke-circle" || channelName === "general") {
                 var date = new Date();
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                 var reply = null;
