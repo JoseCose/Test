@@ -53,7 +53,7 @@ function createChannelData(msg) {
                 channel_id: msg.channel.id, channel_name: msg.channel.name, guild_id: msg.guild.id,
                 guild_name: msg.guild.name, joined: new Date().toLocaleString()
             }
-            };
+        };
         dbo.collection("channels").updateOne(keys, values, { upsert: true }, function (err, res) {
             if (err) throw err;
             db.close();
@@ -255,7 +255,8 @@ function channel(channelId, channelName) {
 
     // Checks a message to see if it contains a banned phrase.
     this.checkForBannedPhrase = function (msg) {
-        if (new RegExp("(\\b(" + bannedPhrases.join("|") + ")\\b)").test(msg.content.toLowerCase())) {
+        // Only apply drug filter to cc.
+        if (new RegExp("(\\b(" + bannedPhrases.join("|") + ")\\b)").test(msg.content.toLowerCase()) && msg.guild.name.toLowerCase() == "chronicchat") {
             applyWarning(msg);
         }
     }
@@ -361,10 +362,16 @@ function channel(channelId, channelName) {
 
     // Whether or not the use has the appropriate rank to start a toke sesion.
     function canStartSession(msg) {
-        return msg.member.roles.cache.some(r => r.name.toLowerCase().includes("mod")) ||
-            msg.member.roles.cache.some(r => r.name.toLowerCase() === "veteran cc members") ||
-            msg.member.roles.cache.some(r => r.name.toLowerCase() === "stoner") ||
-            msg.member.roles.cache.some(r => r.name.toLowerCase() === "nitro booster");
+
+        // chronic chat is the only server that requires roles to start as session.
+        if (msg.guild.name.toLowerCase() == "chronicchat") {
+            return msg.member.roles.cache.some(r => r.name.toLowerCase().includes("mod")) ||
+                msg.member.roles.cache.some(r => r.name.toLowerCase() === "veteran cc members") ||
+                msg.member.roles.cache.some(r => r.name.toLowerCase() === "stoner") ||
+                msg.member.roles.cache.some(r => r.name.toLowerCase() === "nitro booster");
+        } else {
+            return true;
+        }
     }
 
     // Starts a toke session for the channel.
@@ -385,7 +392,7 @@ function channel(channelId, channelName) {
 
         startSessionTimers();
         msg.channel.send(`${author} is starting a toke session` + (filteredParticipants.length > 0 ? ` with ` + filteredParticipants.join(", ") : "") +
-            `. Type !toke to join. Ending in ${ Math.ceil(sessionInterval / 60000) } minutes.`);
+            `. Type !toke to join. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
         addSessionReact(msg);
     }
 
@@ -520,6 +527,10 @@ function channel(channelId, channelName) {
         // Use custom emotes for certain servers.
         if (msg.guild.name.toLowerCase() == "chronicchat") {
             msg.react(`656156154837205012`);
+        } else if (msg.guild.name.toLowerCase().startsWith("ana")) {
+            msg.react(`851209917629071360`);
+        } else if (msg.guild.name.toLowerCase().startsWith("yeah")) {
+            msg.react(`851211115626364938`);
         } else {
             msg.react(`😁`);
         }
@@ -613,7 +624,7 @@ function channel(channelId, channelName) {
     // Post the toke session records for the channel. (Number of toke sessions, most users in a session,
     // number sessions with pre tokes, most pretokes in a session)
     async function postRecords(msg, command) {
-        const client = await MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true },)
+        const client = await MongoClient.connect(mongoConnectionUrl, { useUnifiedTopology: true })
             .catch(err => { console.log(err); });
 
         if (!client) {
@@ -654,34 +665,35 @@ function channel(channelId, channelName) {
 
     // Check to see if it's 4:20 in a timezone.
     function checkTime() {
+        if (!msg.guild.name.toLowerCase().startsWith("yeah")) {
+            // We only want to post in the main channels and not every channel that has had a toke session.
+            if (channelName === "🗣smoke-circle" || channelName === "general" || channelName === "general-hospital" || channelName === "generally-horny") {
+                var date = new Date();
+                const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
+                var reply = null;
 
-        // We only want to post in the main channels and not every channel that has had a toke session.
-        if (channelName === "🗣smoke-circle" || channelName === "general") {
-            var date = new Date();
-            const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
-            var reply = null;
-
-            if (date.getUTCMinutes() === 20) {
-                reply = get420Reply();
-            } else if (date.getUTCMinutes() === 10) {
-                reply = get710Reply();
-            }
-
-            // Null reply means it's not 4:20
-            if (reply !== null) {
-
-                // Start a session if there are pre tokers and a session isn't active.
-                if (participants.length > 0 && !sessionRunning) {
-                    startSessionTimers();
-                    reply = reply.concat(` Starting a session with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
+                if (date.getUTCMinutes() === 20) {
+                    reply = get420Reply();
+                } else if (date.getUTCMinutes() === 10) {
+                    reply = get710Reply();
                 }
 
-                channel.send(reply);
+                // Null reply means it's not 4:20
+                if (reply !== null) {
+
+                    // Start a session if there are pre tokers and a session isn't active.
+                    if (participants.length > 0 && !sessionRunning) {
+                        startSessionTimers();
+                        reply = reply.concat(` Starting a session with ${participants.join(", ")}. Ending in ${Math.ceil(sessionInterval / 60000)} minutes.`);
+                    }
+
+                    channel.send(reply);
+                }
             }
-        }
-        else {
-            // We don't need to check again because we're not in a main channel.
-            clearInterval(timeCheckTimer);
+            else {
+                // We don't need to check again because we're not in a main channel.
+                clearInterval(timeCheckTimer);
+            }
         }
     }
 
@@ -736,7 +748,7 @@ function channel(channelId, channelName) {
                 break;
             case 12:
             case 0:
-                reply =reply.concat("in Alaska Time.");
+                reply = reply.concat("in Alaska Time.");
                 break;
             default:
                 // We don't need to reply because we don't follow other timezones.
@@ -749,16 +761,16 @@ function channel(channelId, channelName) {
 
     // Starts toke session timers.
     function startSessionTimers() {
-            sessionRunning = true;
-            timeStarted = Date.now();
+        sessionRunning = true;
+        timeStarted = Date.now();
 
-            tokeTimer = setTimeout(function () {
-                tokeTimerElapsed();
-            }, sessionInterval);
+        tokeTimer = setTimeout(function () {
+            tokeTimerElapsed();
+        }, sessionInterval);
 
-            reminderTimer = setInterval(function () {
-                reminderTimerElapsed();
-            }, reminderInterval);
+        reminderTimer = setInterval(function () {
+            reminderTimerElapsed();
+        }, reminderInterval);
     }
 
     // Create a reply containing the current timezone in which it is 7:10
