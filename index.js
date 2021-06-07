@@ -665,9 +665,8 @@ function channel(channelId, channelName) {
 
     // Check to see if it's 4:20 in a timezone.
     function checkTime() {
-        if (!msg.guild.name.toLowerCase().startsWith("yeah")) {
             // We only want to post in the main channels and not every channel that has had a toke session.
-            if (channelName === "🗣smoke-circle" || channelName === "general" || channelName === "general-hospital" || channelName === "generally-horny") {
+            if (channelName === "🗣smoke-circle" || channelName === "general" || channelName === "general-hospital") {
                 var date = new Date();
                 const channel = discordClient.channels.cache.find(channel => channel.id === channelId);
                 var reply = null;
@@ -694,7 +693,6 @@ function channel(channelId, channelName) {
                 // We don't need to check again because we're not in a main channel.
                 clearInterval(timeCheckTimer);
             }
-        }
     }
 
     // Create a reply containing the current timezone in which it is 4:20
