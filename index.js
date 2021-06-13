@@ -180,7 +180,6 @@ function channel(channelId, channelName) {
         "cooked": toke,
         "fried": toke,
         "suppository": toke,
-        "re": toke,
         "baby": toke,
         "hella": toke,
         "chillum": toke,
